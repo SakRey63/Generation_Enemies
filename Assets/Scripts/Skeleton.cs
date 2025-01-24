@@ -6,9 +6,12 @@ public class Skeleton : MonoBehaviour
 {
     [SerializeField] private float _speed;
     [SerializeField] private float _finishTime = 2.0f;
+    [SerializeField] private float _distanceToTarget = 0.1f;
     
     private Transform _targetPosition;
     private Animator _animator;
+    private bool _isJump;
+    private bool _isRun;
 
     public event Action<Skeleton> Triggered;
 
@@ -20,36 +23,47 @@ public class Skeleton : MonoBehaviour
     private void Update()
     {
         Move();
-        AchievedTarget();
     }
 
     private IEnumerator MakesPoseWinner()
     {
-        WaitForSeconds wait = new(_finishTime);
+        _isJump = true;
+        _isRun = false;
         
-        _animator.SetBool(PlayerAnimatorData.Params.isJump, true);
+        Setup(_isRun, _isJump);
             
-        yield return wait;
+        yield return new WaitForSeconds(_finishTime);
         
         Triggered?.Invoke(this);
     }
-
-    private void AchievedTarget()
+    
+    private void Move()
     {
-        if (transform.position == _targetPosition.position)
+        transform.position = Vector3.MoveTowards(transform.position, _targetPosition.position, _speed * Time.deltaTime);
+
+        _isJump = false;
+        _isRun = true;
+        
+        Setup(_isRun, _isJump);
+        
+        if (IsTargetReached())
         {
             StartCoroutine(MakesPoseWinner());
         }
     }
     
-    private void Move()
-        {
-            transform.position = Vector3.MoveTowards(transform.position, _targetPosition.position, _speed * Time.deltaTime);
+    private bool IsTargetReached()
+    {
+        return transform.position.IsEnoughClose(_targetPosition.position, _distanceToTarget);
+    }
     
-            _animator.SetBool(PlayerAnimatorData.Params.isRun, true);
-        }
+    private void Setup(bool isRun, bool isJump)
+    {
+        _animator.SetBool(PlayerAnimatorData.Params.isRun, isRun);
+        _animator.SetBool(PlayerAnimatorData.Params.isJump, isJump);
+    }
     
-    public void TargetPosition(Transform point)
+    public void GettingNewPosition(Transform point)
     {
         _targetPosition = point;
                  

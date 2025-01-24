@@ -25,7 +25,22 @@ public class Spawner : MonoBehaviour
             maxSize: _poolMaxSize
         );
     }
-
+    
+    private void Start()
+    {
+        StartCoroutine(SpawnerSkeletons());
+    }
+    
+    private IEnumerator SpawnerSkeletons()
+        {
+            while (true)
+            {
+                SpawnSkeleton();
+    
+                yield return new WaitForSeconds(_repeateTime);
+            }
+        }
+    
     private void GetAction(Skeleton skeleton)
     {
         skeleton.Triggered += SkeletonRelease;
@@ -36,7 +51,7 @@ public class Spawner : MonoBehaviour
         
         skeleton.gameObject.SetActive(true);
         
-        NewTargetPositionSkeleton(skeleton, indexPointSpawn);
+        SpecifyingNewPosition(skeleton, indexPointSpawn);
     }
     
     private void SkeletonRelease(Skeleton skeleton)
@@ -45,30 +60,13 @@ public class Spawner : MonoBehaviour
         
         _pool.Release(skeleton);
     }
-    
-    private void Start()
-    {
-        StartCoroutine(SpawnerSkeletons());
-    }
-
-    private IEnumerator SpawnerSkeletons()
-    {
-        WaitForSeconds wait = new(_repeateTime);
-
-        while (true)
-        {
-            SpawnSkeleton();
-
-            yield return wait;
-        }
-    }
 
     private void SpawnSkeleton()
     {
         _pool.Get();
     }
 
-    private void NewTargetPositionSkeleton(Skeleton skeleton, int indexSpawn)
+    private void SpecifyingNewPosition(Skeleton skeleton, int indexSpawn)
     {
         int indexTargetPoint = GetRandomPoint();
 
@@ -76,16 +74,16 @@ public class Spawner : MonoBehaviour
         {
             if (indexTargetPoint == _points.Length - 1)
             {
-                skeleton.TargetPosition(_points[indexTargetPoint - 1]);
+                skeleton.GettingNewPosition(_points[indexTargetPoint - 1]);
             }
             else
             {
-                skeleton.TargetPosition(_points[indexTargetPoint + 1]);
+                skeleton.GettingNewPosition(_points[indexTargetPoint + 1]);
             }
         }
         else
         {
-            skeleton.TargetPosition(_points[indexTargetPoint]);
+            skeleton.GettingNewPosition(_points[indexTargetPoint]);
         }
     }
 
