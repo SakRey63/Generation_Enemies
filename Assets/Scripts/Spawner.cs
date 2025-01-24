@@ -12,6 +12,8 @@ public class Spawner : MonoBehaviour
     [SerializeField] private int _poolMaxSize = 5;
 
     private ObjectPool<Skeleton> _pool;
+    private WaitForSeconds _waitForSeconds;
+    
     
     private void Awake()
     {
@@ -32,20 +34,22 @@ public class Spawner : MonoBehaviour
     }
     
     private IEnumerator SpawnerSkeletons()
+    {
+        _waitForSeconds = new WaitForSeconds(_repeateTime);
+        
+        while (true)
         {
-            while (true)
-            {
-                SpawnSkeleton();
+            SpawnSkeleton();
     
-                yield return new WaitForSeconds(_repeateTime);
-            }
+            yield return _waitForSeconds;
         }
+    }
     
     private void GetAction(Skeleton skeleton)
     {
         skeleton.Triggered += SkeletonRelease;
 
-        int indexPointSpawn = GetRandomPoint();
+        int indexPointSpawn = GetRandomIndexPoint();
         
         skeleton.transform.position = _points[indexPointSpawn].transform.position;
         
@@ -55,7 +59,7 @@ public class Spawner : MonoBehaviour
     }
     
     private void SkeletonRelease(Skeleton skeleton)
-    {
+    { 
         skeleton.Triggered -= SkeletonRelease;
         
         _pool.Release(skeleton);
@@ -68,31 +72,29 @@ public class Spawner : MonoBehaviour
 
     private void SpecifyingNewPosition(Skeleton skeleton, int indexSpawn)
     {
-        int indexTargetPoint = GetRandomPoint();
+        int indexTargetPoint = GetRandomIndexPoint();
 
         if (indexSpawn == indexTargetPoint)
         {
             if (indexTargetPoint == _points.Length - 1)
             {
-                skeleton.GettingNewPosition(_points[indexTargetPoint - 1]);
+                skeleton.transform.LookAt(_points[indexTargetPoint - 1]);
             }
             else
             {
-                skeleton.GettingNewPosition(_points[indexTargetPoint + 1]);
+                skeleton.transform.LookAt(_points[indexTargetPoint + 1]);
             }
         }
         else
         {
-            skeleton.GettingNewPosition(_points[indexTargetPoint]);
+            skeleton.transform.LookAt(_points[indexTargetPoint]);
         }
     }
 
-    private int GetRandomPoint()
+    private int GetRandomIndexPoint()
     {
         int firstPoint = 0;
 
-        int randomIndexPoint = Random.Range(firstPoint, _points.Length);
-
-        return randomIndexPoint;
+        return Random.Range(firstPoint, _points.Length);
     }
 }

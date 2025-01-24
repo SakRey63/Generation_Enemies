@@ -429,6 +429,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _speed: 5
   _finishTime: 2
+  _distanceToTarget: 0.1
 --- !u!1 &1818926580354158373
 GameObject:
   m_ObjectHideFlags: 0
