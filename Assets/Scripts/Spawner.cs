@@ -8,12 +8,11 @@ public class Spawner : MonoBehaviour
     [SerializeField] private Transform[] _points;
     [SerializeField] private Skeleton _skeleton;
     [SerializeField] private float _repeateTime = 2.0f;
-    [SerializeField] private int _poolCapacity = 5;
-    [SerializeField] private int _poolMaxSize = 5;
+    [SerializeField] private int _poolCapacity = 10;
+    [SerializeField] private int _poolMaxSize = 10;
 
     private ObjectPool<Skeleton> _pool;
     private WaitForSeconds _waitForSeconds;
-    
     
     private void Awake()
     {
@@ -52,10 +51,9 @@ public class Spawner : MonoBehaviour
         int indexPointSpawn = GetRandomIndexPoint();
         
         skeleton.transform.position = _points[indexPointSpawn].transform.position;
-        
         skeleton.gameObject.SetActive(true);
-        
-        SpecifyingNewPosition(skeleton, indexPointSpawn);
+        skeleton.GetDirection(GenerateDirection());
+        skeleton.RotateToDirection();
     }
     
     private void SkeletonRelease(Skeleton skeleton)
@@ -69,26 +67,15 @@ public class Spawner : MonoBehaviour
     {
         _pool.Get();
     }
-
-    private void SpecifyingNewPosition(Skeleton skeleton, int indexSpawn)
+    
+    private Vector3 GenerateDirection()
     {
-        int indexTargetPoint = GetRandomIndexPoint();
+        float angleDirection = Random.Range(0f, Mathf.PI * 2);
 
-        if (indexSpawn == indexTargetPoint)
-        {
-            if (indexTargetPoint == _points.Length - 1)
-            {
-                skeleton.transform.LookAt(_points[indexTargetPoint - 1]);
-            }
-            else
-            {
-                skeleton.transform.LookAt(_points[indexTargetPoint + 1]);
-            }
-        }
-        else
-        {
-            skeleton.transform.LookAt(_points[indexTargetPoint]);
-        }
+        float vectorX = Mathf.Cos(angleDirection);
+        float vectorZ = Mathf.Sin(angleDirection);
+
+        return new Vector3(vectorX, 0, vectorZ);
     }
 
     private int GetRandomIndexPoint()

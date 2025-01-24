@@ -6,7 +6,7 @@ public class Skeleton : MonoBehaviour
     [SerializeField] private float _speed;
     
     private WaitForSeconds _waitForSeconds;
-    private Transform _targetPosition;
+    private Vector3 _direction;
 
     public event Action<Skeleton> Triggered;
 
@@ -17,7 +17,7 @@ public class Skeleton : MonoBehaviour
     
     private void Move()
     {
-        transform.position += transform.forward * _speed * Time.deltaTime;
+        transform.Translate(_direction * _speed * Time.deltaTime, Space.World);
     }
 
     private void OnCollisionEnter(Collision other)
@@ -26,5 +26,15 @@ public class Skeleton : MonoBehaviour
         {
             Triggered?.Invoke(this);
         }
+    }
+
+    public void GetDirection(Vector3 direction)
+    {
+        _direction = direction;
+    }
+    
+    public void RotateToDirection()
+    {
+        transform.rotation = Quaternion.LookRotation(_direction);
     }
 }
