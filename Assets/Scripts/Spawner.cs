@@ -52,7 +52,7 @@ public class Spawner : MonoBehaviour
         
         skeleton.transform.position = _points[indexPointSpawn].transform.position;
         skeleton.gameObject.SetActive(true);
-        skeleton.GetDirection(GenerateDirection());
+        skeleton.SetDirection(GenerateDirection());
         skeleton.RotateToDirection();
     }
     

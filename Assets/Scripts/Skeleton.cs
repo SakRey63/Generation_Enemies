@@ -28,7 +28,7 @@ public class Skeleton : MonoBehaviour
         }
     }
 
-    public void GetDirection(Vector3 direction)
+    public void SetDirection(Vector3 direction)
     {
         _direction = direction;
     }
