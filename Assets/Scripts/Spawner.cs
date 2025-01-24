@@ -28,7 +28,7 @@ public class Spawner : MonoBehaviour
 
     private void GetAction(Skeleton skeleton)
     {
-        skeleton.TriggerEnter += SkeletonRelease;
+        skeleton.Triggered += SkeletonRelease;
 
         int indexPointSpawn = GetRandomPoint();
         
@@ -36,12 +36,12 @@ public class Spawner : MonoBehaviour
         
         skeleton.gameObject.SetActive(true);
         
-        GetTargetPositionSkeleton(skeleton, indexPointSpawn);
+        NewTargetPositionSkeleton(skeleton, indexPointSpawn);
     }
     
     private void SkeletonRelease(Skeleton skeleton)
     {
-        skeleton.TriggerEnter -= SkeletonRelease;
+        skeleton.Triggered -= SkeletonRelease;
         
         _pool.Release(skeleton);
     }
@@ -68,7 +68,7 @@ public class Spawner : MonoBehaviour
         _pool.Get();
     }
 
-    private void GetTargetPositionSkeleton(Skeleton skeleton, int indexSpawn)
+    private void NewTargetPositionSkeleton(Skeleton skeleton, int indexSpawn)
     {
         int indexTargetPoint = GetRandomPoint();
 
@@ -76,16 +76,16 @@ public class Spawner : MonoBehaviour
         {
             if (indexTargetPoint == _points.Length - 1)
             {
-                skeleton.GetTargetPosition(_points[indexTargetPoint - 1]);
+                skeleton.TargetPosition(_points[indexTargetPoint - 1]);
             }
             else
             {
-                skeleton.GetTargetPosition(_points[indexTargetPoint + 1]);
+                skeleton.TargetPosition(_points[indexTargetPoint + 1]);
             }
         }
         else
         {
-            skeleton.GetTargetPosition(_points[indexTargetPoint]);
+            skeleton.TargetPosition(_points[indexTargetPoint]);
         }
     }
 

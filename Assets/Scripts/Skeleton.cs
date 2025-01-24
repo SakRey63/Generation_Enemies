@@ -10,14 +10,7 @@ public class Skeleton : MonoBehaviour
     private Transform _targetPosition;
     private Animator _animator;
 
-    public event Action<Skeleton> TriggerEnter;
-    
-    public void GetTargetPosition(Transform point)
-        {
-            _targetPosition = point;
-            
-            gameObject.transform.LookAt(point);
-        }
+    public event Action<Skeleton> Triggered;
 
     private void Awake()
     {
@@ -26,32 +19,40 @@ public class Skeleton : MonoBehaviour
 
     private void Update()
     {
-        MoveSkeleton();
+        Move();
+        AchievedTarget();
     }
 
-    private void MoveSkeleton()
-    {
-        transform.position = Vector3.MoveTowards(transform.position, _targetPosition.position, _speed * Time.deltaTime);
-
-        _animator.SetBool("isRun", true);
-    }
-
-    private IEnumerator WinnersPose()
+    private IEnumerator MakesPoseWinner()
     {
         WaitForSeconds wait = new(_finishTime);
         
-        _animator.SetBool("isJump", true);
+        _animator.SetBool(PlayerAnimatorData.Params.isJump, true);
             
         yield return wait;
         
-        TriggerEnter?.Invoke(this);
+        Triggered?.Invoke(this);
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void AchievedTarget()
     {
-        if (other.transform.position == _targetPosition.position)
+        if (transform.position == _targetPosition.position)
         {
-            StartCoroutine(WinnersPose());
+            StartCoroutine(MakesPoseWinner());
         }
+    }
+    
+    private void Move()
+        {
+            transform.position = Vector3.MoveTowards(transform.position, _targetPosition.position, _speed * Time.deltaTime);
+    
+            _animator.SetBool(PlayerAnimatorData.Params.isRun, true);
+        }
+    
+    public void TargetPosition(Transform point)
+    {
+        _targetPosition = point;
+                 
+        gameObject.transform.LookAt(point);
     }
 }
